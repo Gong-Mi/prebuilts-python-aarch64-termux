@@ -18,6 +18,7 @@ export CC="$TOOLCHAIN/bin/clang"
 export CXX="$TOOLCHAIN/bin/clang++"
 export AR="$TOOLCHAIN/bin/llvm-ar"
 export RANLIB="$TOOLCHAIN/bin/llvm-ranlib"
+export PKG_CONFIG=false
 export READELF="/usr/bin/readelf"
 export CFLAGS="--target=$TRIPLE -O2 -fPIC"
 export LDFLAGS="--target=$TRIPLE -fPIE -pie"
