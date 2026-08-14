@@ -75,6 +75,14 @@ if [[ ! -f Makefile ]]; then
     py_cv_module_readline=disabled
 fi
 
+# configure regenerates Modules/Setup.local; replace it after configure with the
+# AOSP-style static module selection.
+sed -E 's/^#([a-z_*].*)$/\1/p' Modules/Setup \
+  | sed -E 's/^[[:space:]]+//' \
+  | sed 's/^\*shared\*$/\*static\*/' \
+  | grep -v -E '^(_ctypes|_curses|_curses_panel|_dbm|_gdbm|_lzma|_ssl|_hashopenssl|_hashlib|_sqlite3|_tkinter|_bz2|_zstd|_uuid|_test|xx|readline)([[:space:]]|$)' \
+  > Modules/Setup.local
+
 # Android/Bionic provides librt APIs through libc and has no standalone librt.
 sed -i -E 's/(^|[[:space:]])-lrt([[:space:]]|$)/ /g' Makefile
 make -j"${JOBS:-2}"
