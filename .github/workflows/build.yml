@@ -78,6 +78,7 @@ jobs:
           test -x "$RUNNER_TEMP/moved/bin/python3"
           test -f "$RUNNER_TEMP/moved/python/lib/python3.13/os.py"
           test -d "$RUNNER_TEMP/moved/python/lib/python3.13/lib-dynload"
+          ! find "$RUNNER_TEMP/moved/python/lib/python3.13/lib-dynload" -type f -name '*.so' -print -quit | grep -q .
           tar --zstd -cf "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst" -C "$B" .
           sha256sum "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst" \
             | tee "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst.sha256"
