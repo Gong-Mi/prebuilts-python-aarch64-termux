@@ -42,6 +42,14 @@ jobs:
           tar -xJf "$RUNNER_TEMP/Python-3.13.7.tar.xz" \
             --strip-components=1 -C "$RUNNER_TEMP/python-src"
 
+      - name: Apply Android compatibility patches
+        env:
+          PYTHON_SRC: ${{ runner.temp }}/python-src
+        run: |
+          patch -d "$PYTHON_SRC" -p1 < patches/0005-impl-multiprocessing.patch
+          sed -i 's|@TERMUX_PREFIX@|/data/data/com.termux/files/usr|g' \
+            "$PYTHON_SRC/Modules/_multiprocessing/posixshmem.c"
+
       - name: Build static-libpython Android bundle
         env:
           ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/29.0.14206865
