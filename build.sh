@@ -26,8 +26,9 @@ export LDFLAGS="--target=$TRIPLE -fPIE -pie -llog"
 cd "$PYTHON_SRC"
 if [[ ! -f Modules/Setup.local ]]; then
   sed -E 's/^#([a-z_*].*)$/\1/p' Modules/Setup \
+    | sed -E 's/^[[:space:]]+//' \
     | sed 's/^\*shared\*$/\*static\*/' \
-    | grep -v -E '^(_ctypes|_curses|_curses_panel|_dbm|_gdbm|_lzma|_ssl|_hashopenssl|_sqlite3|_tkinter|_bz2|_zstd|_uuid|readline)([[:space:]]|$)' \
+    | grep -v -E '^(_ctypes|_curses|_curses_panel|_dbm|_gdbm|_lzma|_ssl|_hashopenssl|_hashlib|_sqlite3|_tkinter|_bz2|_zstd|_uuid|readline)([[:space:]]|$)' \
     > Modules/Setup.local
 fi
 if [[ ! -f Makefile ]]; then
