@@ -1,0 +1,72 @@
+name: Build aarch64-Termux Python
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java for sdkmanager
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Set up Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install pinned NDK
+        run: sdkmanager "ndk;29.0.14206865"
+
+      - name: Download pinned CPython source
+        env:
+          PYTHON_SHA256: 5462f9099dfd30e238def83c71d91897d8caa5ff6ebc7a50f14d4802cdaaa79a
+        run: |
+          curl --fail --retry 5 -L \
+            -o "$RUNNER_TEMP/Python-3.13.7.tar.xz" \
+            https://www.python.org/ftp/python/3.13.7/Python-3.13.7.tar.xz
+          echo "$PYTHON_SHA256  $RUNNER_TEMP/Python-3.13.7.tar.xz" | sha256sum -c -
+          mkdir -p "$RUNNER_TEMP/python-src"
+          tar -xJf "$RUNNER_TEMP/Python-3.13.7.tar.xz" \
+            --strip-components=1 -C "$RUNNER_TEMP/python-src"
+
+      - name: Build static-libpython Android bundle
+        env:
+          ANDROID_NDK_HOME: ${{ env.ANDROID_SDK_ROOT }}/ndk/29.0.14206865
+          PYTHON_SRC: ${{ runner.temp }}/python-src
+          OUT: ${{ runner.temp }}/python-out
+          JOBS: '2'
+        run: ./build.sh
+
+      - name: Audit and move bundle
+        run: |
+          set -eux
+          B="$RUNNER_TEMP/python-out/bundle"
+          test -x "$B/bin/python3"
+          file "$B/opt/python/bin/python3.13"
+          readelf -h "$B/opt/python/bin/python3.13" | grep -E 'Class:|Machine:'
+          readelf -l "$B/opt/python/bin/python3.13" | grep interpreter
+          ! readelf -d "$B/opt/python/bin/python3.13" | grep -q 'libpython'
+          unset LD_LIBRARY_PATH
+          "$B/bin/python3" -c 'import argparse, pathlib, subprocess, urllib.request, zipfile'
+          mkdir "$RUNNER_TEMP/moved"
+          cp -a "$B/." "$RUNNER_TEMP/moved/"
+          "$RUNNER_TEMP/moved/bin/python3" -c 'import argparse, pathlib, subprocess, urllib.request, zipfile'
+          tar --zstd -cf "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst" -C "$B" .
+          sha256sum "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst" \
+            | tee "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst.sha256"
+
+      - name: Upload portable bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: aarch64-termux-python-3.13.7
+          path: |
+            ${{ runner.temp }}/aarch64-termux-python-3.13.7.tar.zst
+            ${{ runner.temp }}/aarch64-termux-python-3.13.7.tar.zst.sha256
