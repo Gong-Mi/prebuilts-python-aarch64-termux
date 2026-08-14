@@ -14,8 +14,8 @@ BUNDLE="$OUT/bundle"
 mkdir -p "$BUILD" "$STAGE" "$BUNDLE"
 
 export PATH="$TOOLCHAIN/bin:$PATH"
-export CC="$TOOLCHAIN/bin/clang --target=$TRIPLE"
-export CXX="$TOOLCHAIN/bin/clang++ --target=$TRIPLE"
+export CC="$TOOLCHAIN/bin/clang"
+export CXX="$TOOLCHAIN/bin/clang++"
 export AR="$TOOLCHAIN/bin/llvm-ar"
 export RANLIB="$TOOLCHAIN/bin/llvm-ranlib"
 export READELF="/usr/bin/readelf"
@@ -49,7 +49,20 @@ if [[ ! -f Makefile ]]; then
     ac_cv_func_shm_open=yes \
     ac_cv_func_shm_unlink=yes \
     ac_cv_working_tzset=yes \
-    ac_cv_header_sys_xattr_h=no
+    ac_cv_header_sys_xattr_h=no \
+    py_cv_module__ctypes=disabled \
+    py_cv_module__ctypes_test=disabled \
+    py_cv_module__dbm=disabled \
+    py_cv_module__gdbm=disabled \
+    py_cv_module__lzma=disabled \
+    py_cv_module__ssl=disabled \
+    py_cv_module__sqlite3=disabled \
+    py_cv_module__tkinter=disabled \
+    py_cv_module__curses=disabled \
+    py_cv_module__bz2=disabled \
+    py_cv_module__zstd=disabled \
+    py_cv_module_zlib=disabled \
+    py_cv_module_readline=disabled
 fi
 make -j"${JOBS:-2}"
 make install DESTDIR="$STAGE"
