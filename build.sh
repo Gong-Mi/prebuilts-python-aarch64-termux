@@ -79,9 +79,9 @@ cat > "$BUNDLE/bin/python3" <<'WRAPPER'
 set -eu
 SELF=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
 ROOT=$(CDPATH= cd -- "$SELF/.." && pwd)
-export PYTHONHOME="$ROOT/opt/python"
+export PYTHONHOME="$ROOT/python"
 unset PYTHONPATH
-exec "$ROOT/opt/python/bin/python3.13" "$@"
+exec "$ROOT/python/bin/python3.13" "$@"
 WRAPPER
 chmod 755 "$BUNDLE/bin/python3"
 ln -s python3 "$BUNDLE/bin/python"
