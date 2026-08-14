@@ -50,6 +50,8 @@ if [[ ! -f Makefile ]]; then
     ac_cv_func_shm_unlink=yes \
     ac_cv_working_tzset=yes \
     ac_cv_header_sys_xattr_h=no \
+    ac_cv_header_ffi_h=no \
+    ac_cv_lib_ffi_ffi_call=no \
     py_cv_module__ctypes=disabled \
     py_cv_module__ctypes_test=disabled \
     py_cv_module__dbm=disabled \
