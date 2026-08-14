@@ -68,10 +68,15 @@ jobs:
           readelf -l "$B/opt/python/bin/python3.13" | grep interpreter
           ! readelf -d "$B/opt/python/bin/python3.13" | grep -q 'libpython'
           unset LD_LIBRARY_PATH
-          "$B/bin/python3" -c 'import argparse, pathlib, subprocess, urllib.request, zipfile'
+          file "$B/opt/python/bin/python3.13"
+          readelf -h "$B/opt/python/bin/python3.13" | grep -E 'Class:|Machine:'
+          readelf -l "$B/opt/python/bin/python3.13" | grep interpreter
+          ! readelf -d "$B/opt/python/bin/python3.13" | grep -q 'libpython'
           mkdir "$RUNNER_TEMP/moved"
           cp -a "$B/." "$RUNNER_TEMP/moved/"
-          "$RUNNER_TEMP/moved/bin/python3" -c 'import argparse, pathlib, subprocess, urllib.request, zipfile'
+          test -x "$RUNNER_TEMP/moved/bin/python3"
+          test -f "$RUNNER_TEMP/moved/opt/python/lib/python3.13/os.py"
+          test -d "$RUNNER_TEMP/moved/opt/python/lib/python3.13/lib-dynload"
           tar --zstd -cf "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst" -C "$B" .
           sha256sum "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst" \
             | tee "$RUNNER_TEMP/aarch64-termux-python-3.13.7.tar.zst.sha256"

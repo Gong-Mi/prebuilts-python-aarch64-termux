@@ -86,7 +86,6 @@ WRAPPER
 chmod 755 "$BUNDLE/bin/python3"
 ln -s python3 "$BUNDLE/bin/python"
 
-"$BUNDLE/bin/python3" -c 'import argparse, pathlib, subprocess, urllib.request, zipfile; print("python core smoke: OK")'
-
+# The target is Android/aarch64 and must not be executed on the x86_64 CI runner.
 file "$BUNDLE/opt/python/bin/python3.13"
 readelf -d "$BUNDLE/opt/python/bin/python3.13" | grep NEEDED || true
