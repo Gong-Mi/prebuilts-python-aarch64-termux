@@ -21,7 +21,7 @@ export RANLIB="$TOOLCHAIN/bin/llvm-ranlib"
 export PKG_CONFIG=false
 export READELF="/usr/bin/readelf"
 export CFLAGS="--target=$TRIPLE -O2 -fPIC"
-export LDFLAGS="--target=$TRIPLE -fPIE -pie"
+export LDFLAGS="--target=$TRIPLE -fPIE -pie -llog"
 
 cd "$PYTHON_SRC"
 if [[ ! -f Makefile ]]; then
