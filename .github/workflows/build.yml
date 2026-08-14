@@ -63,7 +63,8 @@ jobs:
           set -eux
           B="$RUNNER_TEMP/python-out/bundle"
           test -x "$B/bin/python3"
-          file "$B/opt/python/bin/python3.13"
+          find "$B" -maxdepth 5 -type f -o -type l | sort
+          ls -la "$B/bin" "$B/opt/python/bin"
           readelf -h "$B/opt/python/bin/python3.13" | grep -E 'Class:|Machine:'
           readelf -l "$B/opt/python/bin/python3.13" | grep interpreter
           ! readelf -d "$B/opt/python/bin/python3.13" | grep -q 'libpython'
