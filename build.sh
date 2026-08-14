@@ -74,6 +74,9 @@ if [[ ! -f Makefile ]]; then
     py_cv_module_zlib=disabled \
     py_cv_module_readline=disabled
 fi
+
+# Android/Bionic provides librt APIs through libc and has no standalone librt.
+sed -i -E 's/(^|[[:space:]])-lrt([[:space:]]|$)/ /g' Makefile
 make -j"${JOBS:-2}"
 make install DESTDIR="$STAGE"
 
